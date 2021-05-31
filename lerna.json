@@ -1,0 +1,7 @@
+{
+  "packages": [
+    "client/*",
+    "firebase-functions/functions/*"
+  ],
+  "version": "0.0.0"
+}

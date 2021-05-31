@@ -1,0 +1,30 @@
+0 silly argv {
+0 silly argv   _: [ 'run' ],
+0 silly argv   concurrency: 1,
+0 silly argv   stream: true,
+0 silly argv   since: 'HEAD',
+0 silly argv   'exclude-dependents': true,
+0 silly argv   excludeDependents: true,
+0 silly argv   lernaVersion: '4.0.0',
+0 silly argv   '$0': 'lerna',
+0 silly argv   script: 'precommit'
+0 silly argv }
+1 notice cli v4.0.0
+2 verbose rootPath /Users/ziyakjehangir/Desktop/ticketblaster
+3 notice filter changed since "HEAD"
+4 notice filter excluding dependents
+5 silly hasTags
+6 verbose hasTags false
+7 info Looking for changed packages since HEAD
+8 silly checking diff firebase-functions/functions
+9 error Error: Command failed with exit code 128: git diff --name-only HEAD -- firebase-functions/functions
+9 error fatal: bad revision 'HEAD'
+9 error     at makeError (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/execa/lib/error.js:59:11)
+9 error     at Function.module.exports.sync (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/execa/index.js:188:17)
+9 error     at Object.execSync (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/@lerna/child-process/index.js:39:16)
+9 error     at diffSinceIn (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/@lerna/collect-updates/lib/make-diff-predicate.js:75:23)
+9 error     at hasDiffSinceThatIsntIgnored (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/@lerna/collect-updates/lib/make-diff-predicate.js:34:18)
+9 error     at isCandidate (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/@lerna/collect-updates/collect-updates.js:113:77)
+9 error     at /Users/ziyakjehangir/Desktop/ticketblaster/node_modules/@lerna/collect-updates/lib/collect-packages.js:24:9
+9 error     at Map.forEach (<anonymous>)
+9 error     at collectPackages (/Users/ziyakjehangir/Desktop/ticketblaster/node_modules/@lerna/collect-updates/lib/collect-packages.js:23:12)

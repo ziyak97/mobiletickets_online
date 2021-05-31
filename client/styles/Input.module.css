@@ -1,0 +1,122 @@
+.field {
+	width: 100%;
+	position: relative;
+	border-bottom: 2px dashed #555;
+	margin: 4rem auto 1rem;
+}
+
+.textarea_field {
+	border: 2px dashed #555;
+	padding: 0 10px;
+}
+
+.input {
+	outline: none;
+	border: none;
+	overflow: hidden;
+	margin: 0;
+	width: 100%;
+	padding: 0.25rem 0;
+	background: none;
+	color: white;
+	font-size: 1.2em;
+	font-weight: bold;
+	transition: border 500ms;
+}
+
+.textarea_input {
+	resize: none;
+}
+
+.input:valid {
+	color: black;
+}
+
+.input:invalid {
+	color: orangered;
+}
+
+/* Border animation */
+
+.field::after {
+	content: "";
+	position: relative;
+	display: block;
+	height: 4px;
+	width: 100%;
+	background: #d16dff;
+	transform: scaleX(0);
+	transform-origin: 0%;
+	opacity: 0;
+	transition: all 500ms ease;
+	top: 2px;
+}
+
+.field:focus-within {
+	border-color: transparent;
+}
+
+.textarea_field:focus-within {
+	border: 2px solid #d16dff;
+}
+
+.field:focus-within::after {
+	transform: scaleX(1);
+	opacity: 1;
+}
+
+.textarea_field:focus-within::after {
+	opacity: 0;
+}
+
+/* Label animation */
+
+.label {
+	color: #555;
+	font-size: 1.2rem;
+	left: 0;
+	z-index: -1;
+	position: absolute;
+	transform-origin: 0%;
+	transition: transform 400ms;
+}
+
+.textarea_label {
+	margin-left: 10px;
+}
+
+.field:focus-within .label, .input:not(:placeholder-shown)+.label {
+	transform: scale(.8) translateY(-30px);
+}
+
+.field:focus-within .textarea_label, .input:not(:placeholder-shown)+.textarea_label {
+	transform: scale(.8) translateY(-30px) translateX(-12px);
+}
+
+.input:-webkit-autofill, .input:-webkit-autofill:hover, .input:-webkit-autofill:focus, .input:-webkit-autofill:active {
+	transition: background-color 5000s ease-in-out 0s;
+	-webkit-text-fill-color: black !important;
+	caret-color: black;
+}
+
+.input::-webkit-input-placeholder {
+	/* Edge */
+	color: transparent;
+}
+
+.input::placeholder {
+	color: transparent;
+}
+
+/* Chrome, Safari, Edge, Opera */
+
+.input::-webkit-outer-spin-button, .input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* Firefox */
+
+.input[type=number] {
+	-moz-appearance: textfield;
+}
