@@ -12,7 +12,7 @@ const Dashboard: React.FC<AppProps> = () => {
     if ((!user || !roles.includes(UserRoles.Admin)) && !isAuthLoading) router.push('/admin')
   }, [user, roles, router, isAuthLoading])
 
-  if (isAuthLoading || !roles.includes(UserRoles.Admin)) return <Loader show />
+  if (isAuthLoading || !roles.includes(UserRoles.Admin)) return <Loader show type="hourglass" />
 
   return (
     <div>

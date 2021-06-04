@@ -85,11 +85,11 @@
 	margin-left: 10px;
 }
 
-.field:focus-within .label, .input:not(:placeholder-shown)+.label {
+.field:focus-within .label, .input:not(:placeholder-shown)+.label, .input:-webkit-autofill+.label {
 	transform: scale(.8) translateY(-30px);
 }
 
-.field:focus-within .textarea_label, .input:not(:placeholder-shown)+.textarea_label {
+.field:focus-within .textarea_label, .input:not(:placeholder-shown)+.textarea_label, .input:-webkit-autofill+.textarea_label {
 	transform: scale(.8) translateY(-30px) translateX(-12px);
 }
 
