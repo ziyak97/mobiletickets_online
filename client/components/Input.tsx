@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react'
+import { ChangeEventHandler } from 'react'
 
-import styles from '../styles/Input.module.css'
+import styles from 'styles/Input.module.css'
 
 interface InputProps {
   isTextArea?: boolean
@@ -9,10 +9,10 @@ interface InputProps {
   label: string
   value: string
   step?: string
-  setValue: Dispatch<SetStateAction<string>>
+  onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>
 }
 
-const Input: React.FC<InputProps> = ({ type, name, label, value, setValue, step, isTextArea }) => {
+const Input: React.FC<InputProps> = ({ type, name, label, value, onChange, step, isTextArea }) => {
   return (
     <>
       {isTextArea ? (
@@ -21,7 +21,7 @@ const Input: React.FC<InputProps> = ({ type, name, label, value, setValue, step,
             className={`${styles.input} ${styles.textarea_input}`}
             name={name}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={onChange}
             placeholder="dummy"
             rows={10}
           />
@@ -36,7 +36,7 @@ const Input: React.FC<InputProps> = ({ type, name, label, value, setValue, step,
             type={type}
             name={name}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={onChange}
             placeholder="dummy"
             min="0"
             step={step}

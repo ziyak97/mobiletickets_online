@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import firebase from 'firebase/app'
 import { UserRoles } from 'lib/context'
-import { auth, firestore } from './firebase'
+import { auth, firestore } from 'lib/firebase'
 
 export function useUserData(): { user: firebase.User; roles: UserRoles[]; isAuthLoading: boolean } {
   const [user, setUser] = useState<firebase.User>(null)
