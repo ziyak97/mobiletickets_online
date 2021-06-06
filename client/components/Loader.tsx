@@ -17,11 +17,12 @@ const Loader: React.FC<LoaderProps> = ({ show, style, type, center }) => {
     right: 0,
     margin: 'auto',
   }
+
+  const finalStyles = center ? styleWithCeter : style
+
   function renderLoader(type: LoaderProps['type']): JSX.Element {
-    if (type === 'circle')
-      return <div style={center ? styleWithCeter : style} className={styles.loader} />
-    if (type === 'hourglass')
-      return <div style={center ? styleWithCeter : style} className={styles.hourglass} />
+    if (type === 'circle') return <div style={finalStyles} className={styles.loader} />
+    if (type === 'hourglass') return <div style={finalStyles} className={styles.hourglass} />
   }
 
   return show ? renderLoader(type) : null
