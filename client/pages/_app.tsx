@@ -10,7 +10,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   const userData = useUserData()
   const { isAuthLoading } = userData
 
-  if (isAuthLoading) return <Loader show type="hourglass" />
+  if (isAuthLoading) return <Loader show type="hourglass" center />
 
   return (
     <UserContext.Provider value={userData}>

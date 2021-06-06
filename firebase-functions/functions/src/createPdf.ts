@@ -43,6 +43,7 @@ export const createPdf = functions.https.onRequest(async (req, res) => {
 
   await file.save(pdf);
 
+  // returns an array where the url for our file will be url[0]
   const url = await file.getSignedUrl({
     action: "read",
     expires: "03-09-2491",

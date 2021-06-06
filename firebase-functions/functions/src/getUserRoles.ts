@@ -13,9 +13,8 @@ export const getUserRoles = functions.https.onRequest(async (req, res) => {
 
   let user = {};
 
+  // there will always be only one user since the limit is 1
   snapshot.forEach((doc) => user = doc.data());
-
-  console.log(user);
 
   res.send(user);
 });

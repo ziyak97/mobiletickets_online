@@ -9,10 +9,22 @@ interface InputProps {
   label: string
   value: string
   step?: string
+  min?: string | number
+  rows?: number
   onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>
 }
 
-const Input: React.FC<InputProps> = ({ type, name, label, value, onChange, step, isTextArea }) => {
+const Input: React.FC<InputProps> = ({
+  type,
+  name,
+  label,
+  value,
+  onChange,
+  step,
+  isTextArea,
+  min,
+  rows = 10,
+}) => {
   return (
     <>
       {isTextArea ? (
@@ -23,7 +35,7 @@ const Input: React.FC<InputProps> = ({ type, name, label, value, onChange, step,
             value={value}
             onChange={onChange}
             placeholder="dummy"
-            rows={10}
+            rows={rows}
           />
           <label className={`${styles.label} ${styles.textarea_label}`} htmlFor={name}>
             {label}
@@ -38,7 +50,7 @@ const Input: React.FC<InputProps> = ({ type, name, label, value, onChange, step,
             value={value}
             onChange={onChange}
             placeholder="dummy"
-            min="0"
+            {...(min ? { min } : {})}
             step={step}
           />
           <label className={styles.label} htmlFor={name}>
