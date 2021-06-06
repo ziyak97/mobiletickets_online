@@ -19,18 +19,28 @@ export const createPdf = functions.https.onRequest(async (req, res) => {
 
   const page = await browser.newPage();
 
-  await page.goto("https://www.ticketek.mobi/?id=012A17958780A7D887AD&s=7894", {
+  await page.goto("https://www.ticketek.mobi/?id=D0E1210502F8C142CF90&s=8078", {
     waitUntil: "networkidle0",
   });
 
-  await page.evaluate(() => {
+  const canEvaluate = await page.evaluate(() => {
+    const barcode = document.querySelector("#barcode");
     const dom = document.querySelectorAll(".textColumn");
-    dom &&
-      dom.forEach((el) => {
-        if (el.lastElementChild) return el.removeChild(el.lastElementChild);
-        return null;
-      });
+
+    if (!barcode || !dom) return false;
+
+    dom.forEach((el) => {
+      if (el.lastElementChild) return el.removeChild(el.lastElementChild);
+      return null;
+    });
+
+    return null;
   });
+
+  if (canEvaluate === false) {
+    res.status(400).send("ticket does not exist");
+    return;
+  }
 
   const pdf = await page.pdf({
     format: "a6",
