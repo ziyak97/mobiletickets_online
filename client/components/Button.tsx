@@ -7,9 +7,10 @@ interface ButtonProps {
   title: string
   handleSubmit: () => void
   type?: 'submit' | 'reset' | 'button'
+  emoji?: string
 }
 
-const Button: React.FC<ButtonProps> = ({ title, isLoading, handleSubmit, type }) => {
+const Button: React.FC<ButtonProps> = ({ title, isLoading, handleSubmit, type, emoji = '→' }) => {
   return (
     <button type={type} className={styles.button} disabled={isLoading} onClick={handleSubmit}>
       <div className={styles.title}>{title}</div>
@@ -21,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({ title, isLoading, handleSubmit, type })
             type="circle"
           />
         ) : (
-          <span>→</span>
+          <span>{emoji}</span>
         )}
       </div>
     </button>

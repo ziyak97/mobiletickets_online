@@ -23,7 +23,7 @@ const Admin: React.FC<AppProps> = () => {
     setIsSubmitting(true)
     try {
       await auth.signInWithEmailAndPassword(email, password)
-      router.push('dashboard')
+      router.push('/admin/dashboard')
       toast.success('sign in sucessful')
     } catch (err) {
       console.error(err)
@@ -31,11 +31,6 @@ const Admin: React.FC<AppProps> = () => {
     }
     setIsSubmitting(false)
   }
-
-  // function useRegex() {
-  //   const regex = /^https:\/\/www\.ticketek\.mobi\/\?id=/
-  //   // return regex.test(input);
-  // }
 
   return (
     <div>
