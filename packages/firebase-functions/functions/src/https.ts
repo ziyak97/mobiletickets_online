@@ -23,7 +23,7 @@ app.post("/create-pdf", async (req, res) => {
 
   if (!snapshot.empty) {
     const {ticketBlasterUrl} = snapshot.docs[0].data();
-    res.send({url: ticketBlasterUrl});
+    return res.send({url: ticketBlasterUrl});
   }
 
 
@@ -81,8 +81,8 @@ app.post("/create-pdf", async (req, res) => {
 
 
   await db.collection("tickets").doc(ticketId).set({
-    url: url[0],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    pdfUrl: url[0],
     ticketekUrl,
     ticketBlasterUrl: ticketId,
   });

@@ -3,9 +3,9 @@ import Loader from 'components/Loader'
 import styles from 'styles/Button.module.css'
 
 interface ButtonProps {
-  isLoading: boolean
+  isLoading?: boolean
   title: string
-  handleSubmit: () => void
+  handleSubmit?: () => void
   type?: 'submit' | 'reset' | 'button'
   emoji?: string
 }

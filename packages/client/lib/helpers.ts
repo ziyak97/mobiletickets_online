@@ -54,12 +54,15 @@ export async function fetchFromAPI<T>(
 
   let errors: CustomError
 
-  const { data, errors: errorsRes }: { data: T; errors: CustomError | unknown } = await res.json()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: T | CustomError | any = await res.json()
 
-  if (!isCustomError(errorsRes)) {
-    errors = { errors: [{ message: 'Something went wrong' }] }
-  } else {
-    errors = errorsRes
+  if (data.errors) {
+    if (!isCustomError(data)) {
+      errors = { errors: [{ message: 'Something went wrong' }] }
+    } else {
+      errors = data
+    }
   }
   return { data, errors }
 }

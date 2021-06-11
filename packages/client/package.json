@@ -7,6 +7,8 @@
     "build": "next build && next export",
     "start": "next start",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
+    "lint": "eslint ./components/** ./pages/** --ext ts,tsx",
+    "lint-fix": "eslint ./components/** ./pages/** --fix --ext ts,tsx",
     "format": "prettier --write --check lib components pages public styles",
     "precommit": "npx lint-staged"
   },

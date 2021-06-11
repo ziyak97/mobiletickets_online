@@ -1,5 +1,6 @@
 import Button from 'components/Button'
 import Input from 'components/Input'
+import CopyText from 'components/CopyText'
 import { UserContext, UserRoles } from 'lib/context'
 import { isValidTicketekUrl, fetchFromAPI } from 'lib/helpers'
 import type { AppProps } from 'next/app'
@@ -19,6 +20,7 @@ const Dashboard: React.FC<AppProps> = () => {
 
   const [ticketUrl, setTicketUrl] = useState('')
   const [isTicketekPdfLoading, setIsTicketekPdfLoading] = useState(false)
+  const [generatedUrl, setGeneratedUrl] = useState('')
 
   useEffect(() => {
     if (!user || !roles.includes(UserRoles.Admin)) router.push('/admin')
@@ -36,7 +38,15 @@ const Dashboard: React.FC<AppProps> = () => {
       body: { ticketekUrl: ticketUrl },
     })
 
-    console.log(data, errors)
+    if (data) {
+      setGeneratedUrl(data.url)
+      toast.success('ticket created sucessfully')
+    }
+
+    if (errors) {
+      setGeneratedUrl('')
+      toast.error(errors.errors[0].message)
+    }
 
     setIsTicketekPdfLoading(false)
   }
@@ -65,6 +75,7 @@ const Dashboard: React.FC<AppProps> = () => {
         />
         {/* <Button title="Get All Tickets CSV" isLoading={isTicketekPdfLoading} emoji="🗃" /> */}
       </div>
+      {generatedUrl && <CopyText text={generatedUrl} />}
     </div>
   )
 }
