@@ -36,6 +36,8 @@ const Dashboard: React.FC<AppProps> = () => {
       body: { ticketekUrl: ticketUrl },
     })
 
+    console.log(data, errors)
+
     setIsTicketekPdfLoading(false)
   }
 

@@ -1,7 +1,6 @@
 {
   "packages": [
-    "client/**",
-    "firebase-functions/functions/**"
+    "packages/*"
   ],
   "version": "independent"
 }

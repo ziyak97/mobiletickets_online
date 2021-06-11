@@ -7,8 +7,7 @@
     "build": "next build && next export",
     "start": "next start",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
-    "lint": "eslint --ext .js,.ts,.tsx src",
-    "format": "prettier --write --check src",
+    "format": "prettier --write --check lib components pages public styles",
     "precommit": "npx lint-staged"
   },
   "dependencies": {
@@ -35,9 +34,7 @@
   },
   "lint-staged": {
     "*.(js|jsx|html|css|ts|tsx)": [
-      "npm run format",
-      "npm run lint",
-      "npm run type-check"
+      "npm run format"
     ]
   }
 }
