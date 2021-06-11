@@ -3,14 +3,21 @@ import * as functions from "firebase-functions";
 import * as puppeteer from "puppeteer";
 
 import * as admin from "firebase-admin";
-
+import {isValidTicketekUrl} from "./helpers";
 
 admin.initializeApp();
 
 const db = admin.firestore();
 
 export const createPdf = functions.https.onRequest(async (req, res) => {
-  // const {ticketekUrl}: {ticketekUrl: URL} = req.body;
+  const {ticketekUrl}: {ticketekUrl: string} = req.body;
+
+  console.log(ticketekUrl);
+
+  if (!isValidTicketekUrl(ticketekUrl)) {
+    res.status(400).send("invalid url");
+    return;
+  }
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -63,5 +70,5 @@ export const createPdf = functions.https.onRequest(async (req, res) => {
     url: url[0],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
-  res.send("done");
+  res.send(url[0]);
 });

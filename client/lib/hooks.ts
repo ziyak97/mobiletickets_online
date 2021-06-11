@@ -19,6 +19,7 @@ export function useUserData(): { user: firebase.User; roles: UserRoles[]; isAuth
           setIsLoading(false)
         })
       } else {
+        setUser(null)
         setUserRoles([])
         setIsLoading(false)
       }

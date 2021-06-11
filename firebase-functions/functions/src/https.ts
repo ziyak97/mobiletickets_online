@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import * as cors from "cors";
 import * as puppeteer from "puppeteer";
+import {isValidTicketekUrl} from "./helpers";
 
 const db = admin.firestore();
 
@@ -10,8 +11,25 @@ const app = express();
 
 app.use(cors({origin: true}));
 
-app.post("/creat-pdf", async (req, res) => {
-  // const {ticketekUrl}: {ticketekUrl: URL} = req.body;
+app.use(express.json());
+
+
+app.post("/create-pdf", async (req, res) => {
+  const {ticketekUrl}: { ticketekUrl: string } = req.body;
+
+  const uersRef = admin.firestore().collection("tickets");
+  const snapshot = await uersRef
+      .where("ticketekUrl", "==", ticketekUrl).limit(1).get();
+
+  if (!snapshot.empty) {
+    const {ticketBlasterUrl} = snapshot.docs[0].data();
+    res.send({url: ticketBlasterUrl});
+  }
+
+
+  if (!isValidTicketekUrl(ticketekUrl)) {
+    return res.status(400).send({errors: [{message: "invalid url"}]});
+  }
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -20,18 +38,27 @@ app.post("/creat-pdf", async (req, res) => {
 
   const page = await browser.newPage();
 
-  await page.goto("https://www.ticketek.mobi/?id=012A17958780A7D887AD&s=7894", {
+  await page.goto(ticketekUrl, {
     waitUntil: "networkidle0",
   });
 
-  await page.evaluate(() => {
+  const canEvaluate = await page.evaluate(() => {
+    const barcode = document.querySelector("#barcode");
     const dom = document.querySelectorAll(".textColumn");
-    dom &&
-      dom.forEach((el) => {
-        if (el.lastElementChild) return el.removeChild(el.lastElementChild);
-        return null;
-      });
+
+    if (!barcode || !dom) return false;
+
+    dom.forEach((el) => {
+      if (el.lastElementChild) return el.removeChild(el.lastElementChild);
+      return null;
+    });
+
+    return null;
   });
+
+  if (canEvaluate === false) {
+    return res.status(400).send({errors: [{message: "ticket does not exist"}]});
+  }
 
   const pdf = await page.pdf({
     format: "a6",
@@ -44,20 +71,27 @@ app.post("/creat-pdf", async (req, res) => {
 
   await file.save(pdf);
 
+  // returns an array where the url for our file will be url[0]
   const url = await file.getSignedUrl({
     action: "read",
     expires: "03-09-2491",
   });
 
-  await db.collection("tickets").doc("test").set({
+  const ticketId = db.collection("tickets").doc().id;
+
+
+  await db.collection("tickets").doc(ticketId).set({
     url: url[0],
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    ticketekUrl,
+    ticketBlasterUrl: ticketId,
   });
-  res.send("done");
+
+  return res.send({url: ticketId});
 });
 
 app.post("/get-user-roles", async (req, res) => {
-  const {email}: {email: string} = JSON.parse(req.body);
+  const {email}: { email: string } = JSON.parse(req.body);
 
   console.log(email);
 
@@ -68,11 +102,9 @@ app.post("/get-user-roles", async (req, res) => {
     throw new Error("invalid email");
   }
 
-  let user = {};
+  const user = snapshot.docs[0].data();
 
-  snapshot.forEach((doc) => user = doc.data());
-
-  res.send(user);
+  return res.send(user);
 });
 
 export const api = functions.https.onRequest(app);
