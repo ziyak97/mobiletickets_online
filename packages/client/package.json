@@ -36,7 +36,9 @@
   },
   "lint-staged": {
     "*.(js|jsx|html|css|ts|tsx)": [
-      "npm run format"
+      "npm run format",
+      "npm run lint-fix",
+      "npm run lint"
     ]
   }
 }
