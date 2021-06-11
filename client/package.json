@@ -36,7 +36,8 @@
   "lint-staged": {
     "*.(js|jsx|html|css|ts|tsx)": [
       "npm run format",
-      "npm run lint"
+      "npm run lint",
+      "npm run type-check"
     ]
   }
 }
