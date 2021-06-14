@@ -1,3 +1,7 @@
+.container {
+  padding: 2%;
+}
+
 .buttons_container {
   display: flex;
   margin-top: 40px;

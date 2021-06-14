@@ -1,0 +1,21 @@
+.contaier {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.header {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.footer > * {
+  margin-left: 15px;
+}

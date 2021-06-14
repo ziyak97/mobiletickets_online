@@ -1,14 +1,16 @@
+import { useContext, useEffect, useState } from 'react'
+import Head from 'next/head'
+import type { AppProps } from 'next/app'
+import { useRouter } from 'next/router'
+import toast from 'react-hot-toast'
 import Button from 'components/Button'
 import Input from 'components/Input'
 import CopyText from 'components/CopyText'
+import CsvModal from 'components/CsvModal'
 import { UserContext, UserRoles } from 'lib/context'
 import { isValidTicketekUrl, fetchFromAPI } from 'lib/helpers'
-import type { AppProps } from 'next/app'
-import { useRouter } from 'next/router'
-import { useContext, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 
-import styles from 'styles/admin-dashboard-page.module.css'
+import styles from 'styles/AdminDashboardPage.module.css'
 
 interface TicketCreated {
   url: string
@@ -21,6 +23,7 @@ const Dashboard: React.FC<AppProps> = () => {
   const [ticketUrl, setTicketUrl] = useState('')
   const [isTicketekPdfLoading, setIsTicketekPdfLoading] = useState(false)
   const [generatedUrl, setGeneratedUrl] = useState('')
+  const [openModal, setOpenModal] = useState(false)
 
   useEffect(() => {
     if (!user || !roles.includes(UserRoles.Admin)) router.push('/admin')
@@ -51,32 +54,48 @@ const Dashboard: React.FC<AppProps> = () => {
     setIsTicketekPdfLoading(false)
   }
 
+  function handleModalClose(): void {
+    setOpenModal(false)
+  }
+
   return (
-    <div>
-      <h2>
-        Enter the Ticketek url you wish to convert{' '}
-        <span role="img" aria-label="rocket">
-          🚀
-        </span>
-      </h2>
-      <Input
-        type="text"
-        name="ticketekUrl"
-        label="Ticketek Url"
-        value={ticketUrl}
-        onChange={(e) => setTicketUrl(e.target.value)}
-      />
-      <div className={styles.buttons_container}>
-        <Button
-          title="Convert"
-          isLoading={isTicketekPdfLoading}
-          handleSubmit={handleTicketekPdfClick}
-          emoji="🤖"
+    <>
+      <Head>
+        <title>Mobile Tickets - Dashboard</title>
+      </Head>
+      <div className={styles.container}>
+        <h2>
+          Enter the Ticketek url you wish to convert{' '}
+          <span role="img" aria-label="rocket">
+            🚀
+          </span>
+        </h2>
+        <Input
+          type="text"
+          name="ticketekUrl"
+          label="Ticketek Url"
+          value={ticketUrl}
+          onChange={(e) => setTicketUrl(e.target.value)}
         />
-        {/* <Button title="Get All Tickets CSV" isLoading={isTicketekPdfLoading} emoji="🗃" /> */}
+        <div className={styles.buttons_container}>
+          <Button
+            title="Convert"
+            isLoading={isTicketekPdfLoading}
+            handleSubmit={handleTicketekPdfClick}
+            emoji="🤖"
+          />
+          <Button title="Get All Tickets CSV" emoji="🗃" handleSubmit={() => setOpenModal(true)} />
+        </div>
+        {generatedUrl && !isTicketekPdfLoading && (
+          <CopyText
+            style={{ marginTop: 40 }}
+            text={`${window.location.origin}?id=${generatedUrl}`}
+          />
+        )}
       </div>
-      {generatedUrl && <CopyText text={generatedUrl} />}
-    </div>
+
+      <CsvModal open={openModal} handleClose={handleModalClose} />
+    </>
   )
 }
 

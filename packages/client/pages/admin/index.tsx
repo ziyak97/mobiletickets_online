@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import toast from 'react-hot-toast'
 import Input from 'components/Input'
 import Button from 'components/Button'
+import Loader from 'components/Loader'
 import { auth } from 'lib/firebase'
 import { UserContext, UserRoles } from 'lib/context'
 
@@ -16,6 +18,7 @@ const Admin: React.FC<AppProps> = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
+    console.log(user, roles)
     if (user && roles.includes(UserRoles.Admin)) router.push('/admin/dashboard')
   }, [user, roles, router])
 
@@ -32,30 +35,37 @@ const Admin: React.FC<AppProps> = () => {
     setIsSubmitting(false)
   }
 
+  if (user && roles.includes(UserRoles.Admin)) return <Loader show type="circle" center />
+
   return (
-    <div>
-      <h1>
-        Welcome! Sign In To Continue{' '}
-        <span role="img" aria-label="fire">
-          🔥
-        </span>
-      </h1>
-      <Input
-        type="email"
-        name="Email"
-        label="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <Input
-        type="password"
-        name="Password"
-        label="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button title="Login" isLoading={isSubmitting} handleSubmit={handleSubmit} type="button" />
-    </div>
+    <>
+      <Head>
+        <title>Mobile Tickets - Login</title>
+      </Head>
+      <div style={{ padding: '2%' }}>
+        <h1>
+          Welcome! Sign In To Continue{' '}
+          <span role="img" aria-label="fire">
+            🔥
+          </span>
+        </h1>
+        <Input
+          type="email"
+          name="Email"
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          type="password"
+          name="Password"
+          label="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button title="Login" isLoading={isSubmitting} handleSubmit={handleSubmit} type="button" />
+      </div>
+    </>
   )
 }
 

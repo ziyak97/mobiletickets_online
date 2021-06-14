@@ -10,12 +10,15 @@
 
 .container {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   top: 50%;
   transform: translate(0, -50%);
   padding: 0;
   z-index: 1000;
   width: 60%;
   height: 60%;
+  overflow: scroll;
 }
 
 .header {
@@ -34,6 +37,7 @@
 
 .content {
   padding: 20px;
+  flex: 1;
 }
 
 @media screen and (max-width: 768px) {

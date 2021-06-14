@@ -19,12 +19,17 @@ function isCustomError(arg: any): arg is CustomError {
   return arg && arg.errors && arg.errors[0] && arg.errors[0].message
 }
 
+/**
+ * Checks if ticket url is valid.
+ * @param {string} input The url.
+ * @return {boolean} If the url is a valid ticketek url.
+ */
 export function isValidTicketekUrl(input: string): boolean {
   const regex = /^https:\/\/www\.ticketek\.mobi\/\?id=/
   return regex.test(input)
 }
 
-const API = 'http://localhost:5001/mobiletickets-online/us-central1/api'
+export const API = 'http://localhost:5001/mobiletickets-online/us-central1/api'
 
 /**
  * A helper function to fetch data from your API.
@@ -32,9 +37,9 @@ const API = 'http://localhost:5001/mobiletickets-online/us-central1/api'
  */
 export async function fetchFromAPI<T>(
   endpointURL: string,
-  opts?: Record<string, unknown>
+  opts?: { method?: string; body?: Record<string, unknown> }
 ): Promise<FetchResponse<T>> {
-  const { method, body }: { method: string; body: Record<string, unknown> | null } = {
+  const { method, body }: { method: string; body: Record<string, unknown> } = {
     method: 'POST',
     body: null,
     ...opts,

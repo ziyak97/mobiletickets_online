@@ -3,7 +3,10 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import * as cors from "cors";
 import * as puppeteer from "puppeteer";
-import {isValidTicketekUrl} from "./helpers";
+import {Parser} from "json2csv";
+import {isValidTicketekUrl, csvFields as fields} from "./helpers";
+
+admin.initializeApp();
 
 const db = admin.firestore();
 
@@ -17,18 +20,17 @@ app.use(express.json());
 app.post("/create-pdf", async (req, res) => {
   const {ticketekUrl}: { ticketekUrl: string } = req.body;
 
-  const uersRef = admin.firestore().collection("tickets");
-  const snapshot = await uersRef
+  if (!isValidTicketekUrl(ticketekUrl)) {
+    return res.status(400).send({errors: [{message: "invalid url"}]});
+  }
+
+  const ticketsRef = admin.firestore().collection("tickets");
+  const snapshot = await ticketsRef
       .where("ticketekUrl", "==", ticketekUrl).limit(1).get();
 
   if (!snapshot.empty) {
-    const {ticketBlasterUrl} = snapshot.docs[0].data();
-    return res.send({url: ticketBlasterUrl});
-  }
-
-
-  if (!isValidTicketekUrl(ticketekUrl)) {
-    return res.status(400).send({errors: [{message: "invalid url"}]});
+    const {mobileTicketsUrl} = snapshot.docs[0].data();
+    return res.send({url: mobileTicketsUrl});
   }
 
   const browser = await puppeteer.launch({
@@ -67,7 +69,12 @@ app.post("/create-pdf", async (req, res) => {
 
   await browser.close();
 
-  const file = admin.storage().bucket("gs://mobiletickets-online.appspot.com").file("test.pdf");
+  const ticketId = db.collection("tickets").doc().id;
+
+  const file = admin
+      .storage()
+      .bucket("gs://mobiletickets-online.appspot.com")
+      .file(`mobiletickets_online?id=${ticketId}.pdf`);
 
   await file.save(pdf);
 
@@ -77,34 +84,46 @@ app.post("/create-pdf", async (req, res) => {
     expires: "03-09-2491",
   });
 
-  const ticketId = db.collection("tickets").doc().id;
-
-
   await db.collection("tickets").doc(ticketId).set({
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     pdfUrl: url[0],
     ticketekUrl,
-    ticketBlasterUrl: ticketId,
+    mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
   });
 
   return res.send({url: ticketId});
 });
 
-app.post("/get-user-roles", async (req, res) => {
-  const {email}: { email: string } = JSON.parse(req.body);
-
-  console.log(email);
-
-  const uersRef = admin.firestore().collection("users");
-  const snapshot = await uersRef.where("email", "==", email).limit(1).get();
-
-  if (snapshot.empty) {
-    throw new Error("invalid email");
+app.get("/create-csv", async (_req, res) => {
+  const ticketsRef = admin.firestore().collection("tickets");
+  const snapshot = await ticketsRef.get();
+  interface Ticket {
+    ticketekUrl: string,
+    mobileTicketsUrl: string,
+    createdAt: string,
   }
 
-  const user = snapshot.docs[0].data();
+  if (snapshot.empty) {
+    res.status(400).send({errors: [{message: "no tickets yet"}]});
+  }
 
-  return res.send(user);
+  const ticketsData: Ticket[] = [];
+
+  snapshot.forEach((doc) => {
+    const ticketObject = {
+      ticketekUrl: doc.data().ticketekUrl as string,
+      mobileTicketsUrl: doc.data().mobileTicketsUrl as string,
+      createdAt: doc.data().createdAt.toDate().toDateString() as string,
+    };
+    ticketsData.push(ticketObject);
+  });
+
+  const fileName = "mobiletickets_online.csv";
+  const json2csv = new Parser({fields});
+  const csv = json2csv.parse(ticketsData);
+  res.header("Content-Type", "text/csv");
+  res.attachment(fileName);
+  return res.status(200).send(csv);
 });
 
 export const api = functions.https.onRequest(app);

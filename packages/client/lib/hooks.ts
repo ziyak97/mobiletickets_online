@@ -11,10 +11,12 @@ export function useUserData(): { user: firebase.User; roles: UserRoles[]; isAuth
   useEffect(() => {
     let unsubscribe: () => void
     auth.onAuthStateChanged((user) => {
+      console.log(user)
       if (user) {
         setUser(user)
         const userRef = firestore.collection('users').doc(user.uid)
         unsubscribe = userRef.onSnapshot((doc) => {
+          console.log(isLoading)
           setUserRoles((doc.data()?.roles as UserRoles[]) || [])
           setIsLoading(false)
         })
@@ -26,7 +28,7 @@ export function useUserData(): { user: firebase.User; roles: UserRoles[]; isAuth
     })
 
     return unsubscribe
-  }, [user])
+  }, [])
 
   return { user, roles: userRoles, isAuthLoading: isLoading }
 }

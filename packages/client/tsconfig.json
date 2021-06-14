@@ -5,7 +5,7 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -31,5 +31,6 @@
     "@components/*": ["components/*"],
     "@styles/*": ["styles/*"],
     "@lib/*": ["lib/*"],
+    "@public/*": ["public/*"],
   }
 }
