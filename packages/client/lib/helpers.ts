@@ -29,7 +29,8 @@ export function isValidTicketekUrl(input: string): boolean {
   return regex.test(input)
 }
 
-export const API = 'http://localhost:5001/mobiletickets-online/us-central1/api'
+// export const API = 'http://localhost:5001/mobiletickets-online/us-central1/api'
+export const API = 'https://us-central1-mobiletickets-online.cloudfunctions.net/api'
 
 /**
  * A helper function to fetch data from your API.
