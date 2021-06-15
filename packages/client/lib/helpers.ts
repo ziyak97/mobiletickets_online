@@ -49,16 +49,21 @@ export async function fetchFromAPI<T>(
   const user = auth.currentUser
   const token = user && (await user.getIdToken())
 
-  const res = await fetch(`${API}/${endpointURL}`, {
-    method,
-    ...(body && { body: JSON.stringify(body) }),
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
   let errors: CustomError
+  let res
+
+  try {
+    res = await fetch(`${API}/${endpointURL}`, {
+      method,
+      ...(body && { body: JSON.stringify(body) }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  } catch (error) {
+    errors = { errors: [{ message: 'Something went wrong' }] }
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data: T | CustomError | any = await res.json()

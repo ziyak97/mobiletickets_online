@@ -78,15 +78,12 @@ app.post("/create-pdf", async (req, res) => {
 
   await file.save(pdf);
 
-  // returns an array where the url for our file will be url[0]
-  const url = await file.getSignedUrl({
-    action: "read",
-    expires: "03-09-2491",
-  });
+  const metaData = await file.getMetadata();
+  const url = metaData[0].mediaLink;
 
   await db.collection("tickets").doc(ticketId).set({
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    pdfUrl: url[0],
+    pdfUrl: url,
     ticketekUrl,
     mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
   });
@@ -126,4 +123,4 @@ app.get("/create-csv", async (_req, res) => {
   return res.status(200).send(csv);
 });
 
-export const api = functions.https.onRequest(app);
+export const api = functions.runWith({memory: "1GB"}).https.onRequest(app);
