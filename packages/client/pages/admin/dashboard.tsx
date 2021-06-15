@@ -13,7 +13,7 @@ import { isValidTicketekUrl, fetchFromAPI } from 'lib/helpers'
 import styles from 'styles/AdminDashboardPage.module.css'
 
 interface TicketCreated {
-  url: string
+  id: string
 }
 
 const Dashboard: React.FC<AppProps> = () => {
@@ -22,7 +22,7 @@ const Dashboard: React.FC<AppProps> = () => {
 
   const [ticketUrl, setTicketUrl] = useState('')
   const [isTicketekPdfLoading, setIsTicketekPdfLoading] = useState(false)
-  const [generatedUrl, setGeneratedUrl] = useState('')
+  const [id, setId] = useState('')
   const [openModal, setOpenModal] = useState(false)
 
   useEffect(() => {
@@ -42,12 +42,12 @@ const Dashboard: React.FC<AppProps> = () => {
     })
 
     if (data) {
-      setGeneratedUrl(data.url)
+      setId(data.id)
       toast.success('ticket created sucessfully')
     }
 
     if (errors) {
-      setGeneratedUrl('')
+      setId('')
       toast.error(errors.errors[0].message)
     }
 
@@ -86,11 +86,8 @@ const Dashboard: React.FC<AppProps> = () => {
           />
           <Button title="Get All Tickets CSV" emoji="🗃" handleSubmit={() => setOpenModal(true)} />
         </div>
-        {generatedUrl && !isTicketekPdfLoading && (
-          <CopyText
-            style={{ marginTop: 40 }}
-            text={`${window.location.origin}?id=${generatedUrl.split('?id=')[1]}`}
-          />
+        {id && !isTicketekPdfLoading && (
+          <CopyText style={{ marginTop: 40 }} text={`${window.location.origin}?id=${id}`} />
         )}
       </div>
 

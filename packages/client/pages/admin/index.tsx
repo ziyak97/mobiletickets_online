@@ -18,7 +18,6 @@ const Admin: React.FC<AppProps> = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    console.log(user, roles)
     if (user && roles.includes(UserRoles.Admin)) router.push('/admin/dashboard')
   }, [user, roles, router])
 

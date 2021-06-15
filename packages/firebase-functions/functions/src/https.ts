@@ -30,7 +30,7 @@ app.post("/create-pdf", async (req, res) => {
 
   if (!snapshot.empty) {
     const {mobileTicketsUrl} = snapshot.docs[0].data();
-    return res.send({url: mobileTicketsUrl});
+    return res.send({id: mobileTicketsUrl.split("?id=")[1]});
   }
 
   const browser = await puppeteer.launch({
@@ -78,8 +78,7 @@ app.post("/create-pdf", async (req, res) => {
 
   await file.save(pdf);
 
-  const metaData = await file.getMetadata();
-  const url = metaData[0].mediaLink;
+  const url = `https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D${ticketId}.pdf`;
 
   await db.collection("tickets").doc(ticketId).set({
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -88,7 +87,7 @@ app.post("/create-pdf", async (req, res) => {
     mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
   });
 
-  return res.send({url: ticketId});
+  return res.send({id: ticketId});
 });
 
 app.get("/create-csv", async (_req, res) => {

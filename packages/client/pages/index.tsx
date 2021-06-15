@@ -54,7 +54,7 @@ const Home: React.FC<AppProps> = () => {
 
   return (
     <div className={styles.container}>
-      <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} />
+      <Loader show={!pdfUrl} type="circle" center />
       <object data={pdfUrl} type="application/pdf" width="100%" height="100%">
         <embed src={pdfUrl} type="application/pdf" width="100%" height="100%" />
       </object>
