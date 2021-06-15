@@ -89,7 +89,7 @@ const Dashboard: React.FC<AppProps> = () => {
         {generatedUrl && !isTicketekPdfLoading && (
           <CopyText
             style={{ marginTop: 40 }}
-            text={`${window.location.origin}?id=${generatedUrl}`}
+            text={`${window.location.origin}?id=${generatedUrl.split('?id=')[1]}`}
           />
         )}
       </div>
