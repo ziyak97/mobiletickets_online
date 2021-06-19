@@ -17,6 +17,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
     <>
       <Head>
         <title>Mobile Tickets</title>
+        <meta name="description" content="Created by Ziyak Jehangir 👯‍♀️" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <UserContext.Provider value={userData}>
