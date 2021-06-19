@@ -20,6 +20,12 @@ app.use(express.json());
 app.post("/create-pdf", async (req, res) => {
   const {ticketekUrl}: { ticketekUrl: string } = req.body;
 
+  if (!ticketekUrl.length) {
+    res
+        .status(400)
+        .send({errors: [{message: "no url entered"}]});
+  }
+
   if (!isValidTicketekUrl(ticketekUrl)) {
     return res.status(400).send({errors: [{message: "invalid url"}]});
   }
@@ -30,7 +36,7 @@ app.post("/create-pdf", async (req, res) => {
 
   if (!snapshot.empty) {
     const {mobileTicketsUrl} = snapshot.docs[0].data();
-    return res.send({id: mobileTicketsUrl.split("?id=")[1]});
+    return res.send({id: mobileTicketsUrl.split("?id=")[1], ticketekUrl});
   }
 
   const browser = await puppeteer.launch({
@@ -47,12 +53,16 @@ app.post("/create-pdf", async (req, res) => {
   const canEvaluate = await page.evaluate(() => {
     const barcode = document.querySelector("#barcode");
     const dom = document.querySelectorAll(".textColumn");
+    const body = document.querySelector("body");
+    if (body) body.style.height = "100vh";
+    const stdPageContent: HTMLElement | null =
+      document.querySelector("#stdPageContent");
+    if (stdPageContent) stdPageContent.style.paddingBottom = "0";
 
     if (!barcode || !dom) return false;
 
     dom.forEach((el) => {
-      if (el.lastElementChild) return el.removeChild(el.lastElementChild);
-      return null;
+      if (el.lastElementChild) el.removeChild(el.lastElementChild);
     });
 
     return null;
@@ -87,7 +97,7 @@ app.post("/create-pdf", async (req, res) => {
     mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
   });
 
-  return res.send({id: ticketId});
+  return res.send({id: ticketId, ticketekUrl});
 });
 
 app.get("/create-csv", async (_req, res) => {
@@ -121,5 +131,146 @@ app.get("/create-csv", async (_req, res) => {
   res.attachment(fileName);
   return res.status(200).send(csv);
 });
+
+app.post("/create-pdfs", async (req, res) => {
+  const {ticketekUrls}: { ticketekUrls: string[] } = req.body;
+  const finalUrlIds: { id: string, ticketekUrl: string }[] = [];
+
+  if (!ticketekUrls.length) {
+    res
+        .status(400)
+        .send({errors: [{message: "no urls entered"}]});
+  }
+
+  let allUrlsAreValid = true;
+  let invlidUrl = "";
+
+  for (const ticketekUrl of ticketekUrls) {
+    if (!isValidTicketekUrl(ticketekUrl)) {
+      allUrlsAreValid = false;
+      invlidUrl = ticketekUrl;
+      break;
+    }
+  }
+
+  if (!allUrlsAreValid) {
+    return res
+        .status(400)
+        .send({errors: [{message: `${invlidUrl} is an invlid url`}]});
+  }
+
+  /**
+ * Checks if ticket url is valid.
+ * @param {string} ticketekUrl The url.
+ * @return {Promise<FirebaseFirestore.DocumentData>}
+ */ async function findExistingUrl(ticketekUrl: string)
+    : Promise<FirebaseFirestore.DocumentData> {
+    return await ticketsRef
+        .where("ticketekUrl", "==", ticketekUrl).limit(1).get();
+  }
+
+  const ticketsRef = admin.firestore().collection("tickets");
+  const promises = ticketekUrls.map((ticketekUrl) => {
+    return findExistingUrl(ticketekUrl);
+  });
+
+  const snapshots = await Promise.all(promises);
+
+  snapshots.forEach((snapshot) => {
+    if (!snapshot.empty) {
+      const {mobileTicketsUrl, ticketekUrl} = snapshot.docs[0].data();
+      finalUrlIds
+          .push({id: mobileTicketsUrl.split("?id=")[1], ticketekUrl});
+      const index = ticketekUrls.indexOf(ticketekUrl);
+      if (index > -1) {
+        ticketekUrls.splice(index, 1);
+      }
+    }
+  });
+
+  if (!ticketekUrls.length) res.send(finalUrlIds);
+
+  /**
+ * Checks if ticket url is valid.
+ * @param {string} ticketekUrl The url.
+ */
+  async function generatePdfs(ticketekUrl: string) {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "disable-setuid-sandbox"],
+    });
+
+    const page = await browser.newPage();
+
+    await page.goto(ticketekUrl, {
+      waitUntil: "networkidle0",
+    });
+
+    const canEvaluate = await page.evaluate(() => {
+      const barcode = document.querySelector("#barcode");
+      const dom = document.querySelectorAll(".textColumn");
+      const body = document.querySelector("body");
+      if (body) body.style.height = "100vh";
+      const stdPageContent: HTMLElement | null =
+        document.querySelector("#stdPageContent");
+      if (stdPageContent) stdPageContent.style.paddingBottom = "0";
+
+      if (!barcode || !dom) return false;
+
+      dom.forEach((el) => {
+        if (el.lastElementChild) el.removeChild(el.lastElementChild);
+      });
+
+      return null;
+    });
+
+    if (canEvaluate === false) {
+      return res.status(400)
+          .send({errors: [{message: "ticket does not exist"}]});
+    }
+
+    const pdf = await page.pdf({
+      format: "a6",
+      printBackground: true,
+    });
+
+    await browser.close();
+
+    const ticketId = db.collection("tickets").doc().id;
+
+    const file = admin
+        .storage()
+        .bucket("gs://mobiletickets-online.appspot.com")
+        .file(`mobiletickets_online?id=${ticketId}.pdf`);
+
+    await file.save(pdf);
+
+    const url = `https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D${ticketId}.pdf`;
+
+    await db.collection("tickets").doc(ticketId).set({
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      pdfUrl: url,
+      ticketekUrl,
+      mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
+    });
+    finalUrlIds
+        .push({id: ticketId, ticketekUrl});
+
+    return null;
+  }
+
+  const pdfPromises = ticketekUrls.map(async (ticketekUrl) => {
+    return await generatePdfs(ticketekUrl);
+  });
+
+  try {
+    await Promise.all(pdfPromises);
+  } catch (error) {
+    console.error(error);
+  }
+
+  return res.send(finalUrlIds);
+});
+
 
 export const api = functions.runWith({memory: "1GB"}).https.onRequest(app);

@@ -8,7 +8,7 @@
     "start": "next start",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "lint": "eslint --ext js,jsx,ts,tsx --fix",
-    "format": "prettier --write --check lib components pages public styles",
+    "format": "prettier --write --check lib components pages styles",
     "precommit": "npx lint-staged"
   },
   "dependencies": {

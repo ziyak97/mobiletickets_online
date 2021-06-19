@@ -1,0 +1,121 @@
+.tagArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  border-bottom: 2px dashed #555;
+  margin: 4rem auto 1rem;
+}
+
+.tagArea__displayArea {
+  display: flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tagArea__input {
+  outline: none;
+  border: none;
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  padding: 0.25rem 0;
+  background: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: border 500ms;
+}
+
+.tagComponent {
+  display: flex;
+  background-color: #8af4c9;
+  border: 2px solid black;
+  padding: 5px 15px;
+  border-radius: 25px;
+  align-items: center;
+  z-index: 10;
+}
+
+.tagComponent__text {
+  color: black;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.tagComponent__close {
+  margin-left: 0.8rem;
+  font-weight: bold;
+  font-size: 1rem;
+  font-family: sans-serif;
+  color: red;
+}
+
+.tagComponent__close:hover {
+  cursor: pointer;
+}
+
+/* Border animation */
+
+.tagArea::after {
+  content: '';
+  position: absolute;
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: #d16dff;
+  transform: scaleX(0);
+  transform-origin: 0%;
+  opacity: 0;
+  transition: all 500ms ease;
+  bottom: 0;
+}
+
+.tagArea:focus-within {
+  border-color: transparent;
+}
+
+.tagArea:focus-within::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.tagLabel {
+  color: #555;
+  font-size: 1.2rem;
+  left: 0;
+  z-index: -1;
+  position: absolute;
+  transform-origin: 0%;
+  transition: transform 400ms;
+}
+
+.tagArea:focus-within .tagLabel,
+.tagArea__input:not(:placeholder-shown) + .tagLabel,
+.tagArea__input__active + .tagLabel {
+  transform: scale(0.8) translateY(-30px);
+}
+
+.tagArea__input:-webkit-autofill,
+.tagArea__input:-webkit-autofill:hover,
+.tagArea__input:-webkit-autofill:focus,
+.tagArea__input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: black !important;
+  caret-color: black;
+}
+
+.tagArea__input::-webkit-input-placeholder {
+  /* Edge */
+  color: transparent;
+}
+
+.tagArea__input:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: transparent;
+}
+
+.tagArea__input::placeholder {
+  color: transparent;
+}

@@ -40,8 +40,7 @@ const Home: React.FC<AppProps> = () => {
 
   if (error) return <div>Error...</div>
 
-  if (isLoading)
-    return <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} />
+  if (isLoading) return <Loader show type="circle" center />
 
   if (!id || !pdfUrl)
     return (
@@ -54,7 +53,7 @@ const Home: React.FC<AppProps> = () => {
 
   return (
     <div className={styles.container}>
-      <Loader show={!pdfUrl} type="circle" center />
+      <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} />
       <object data={pdfUrl} type="application/pdf" width="100%" height="100%">
         <embed src={pdfUrl} type="application/pdf" width="100%" height="100%" />
       </object>
