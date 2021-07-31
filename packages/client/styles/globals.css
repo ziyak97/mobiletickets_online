@@ -14,6 +14,10 @@ body {
     Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+body {
+  padding: 5px;
+}
+
 a {
   color: inherit;
   text-decoration: none;
