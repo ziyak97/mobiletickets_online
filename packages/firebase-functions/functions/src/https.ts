@@ -104,13 +104,13 @@ app.post("/create-pdf", async (req, res) => {
 
   // await page.setViewport({
   //   width: scrollDimension.width,
-  //   height: scrollDimension.height,
+  //   height: scrollDimension.height + 50,
   // });
 
   const pdf = await page.pdf({
     printBackground: true,
     width: scrollDimension.width,
-    height: scrollDimension.height,
+    height: scrollDimension.height + 50,
   });
 
   await browser.close();
@@ -300,13 +300,13 @@ app.post("/create-pdfs", async (req, res) => {
 
     // await page.setViewport({
     //   width: scrollDimension.width,
-    //   height: scrollDimension.height,
+    //   height: scrollDimension.height + 50,
     // });
 
     const pdf = await page.pdf({
       printBackground: true,
       width: scrollDimension.width,
-      height: scrollDimension.height,
+      height: scrollDimension.height + 50,
     });
 
     await browser.close();
