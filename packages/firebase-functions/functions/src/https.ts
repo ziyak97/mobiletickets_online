@@ -110,7 +110,7 @@ app.post("/create-pdf", async (req, res) => {
   const pdf = await page.pdf({
     printBackground: true,
     width: scrollDimension.width,
-    height: scrollDimension.height + 30,
+    height: scrollDimension.height,
   });
 
   await browser.close();
@@ -306,7 +306,7 @@ app.post("/create-pdfs", async (req, res) => {
     const pdf = await page.pdf({
       printBackground: true,
       width: scrollDimension.width,
-      height: scrollDimension.height + 30,
+      height: scrollDimension.height,
     });
 
     await browser.close();
