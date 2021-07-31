@@ -41,14 +41,13 @@ app.post("/create-pdf", async (req, res) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    defaultViewport: {
-      width: 500,
-      height: 800,
-      isMobile: true,
-    },
   });
 
   const page = await browser.newPage();
+
+  const phone = puppeteer.devices["iPhone X"];
+
+  await page.emulate(phone);
 
   await page.goto(ticketekUrl, {
     waitUntil: "networkidle0",
@@ -57,17 +56,8 @@ app.post("/create-pdf", async (req, res) => {
   const canEvaluate = await page.evaluate(() => {
     const barcode = document.querySelector("#barcode");
     const dom = document.querySelectorAll(".textColumn");
-    const body = document.querySelector("body");
-    if (body) body.style.fontFamily = "sans-serif";
-    const stdPageContent: HTMLElement | null =
-      document.querySelector("#stdPageContent");
-    if (stdPageContent) stdPageContent.style.paddingBottom = "0";
 
     if (!barcode || !dom) return false;
-
-    dom.forEach((el) => {
-      if (el.lastElementChild) el.removeChild(el.lastElementChild);
-    });
 
     return null;
   });
@@ -79,22 +69,49 @@ app.post("/create-pdf", async (req, res) => {
   }
 
   const scrollDimension = await page.evaluate(() => {
+    const dom = document.querySelectorAll(".textColumn");
+    const body = document.querySelector("body");
+    if (body) {
+      body.style.fontFamily = "sans-serif";
+      body.style.height = "100vh";
+    }
+    const stdPageContent: HTMLElement | null =
+      document.querySelector("#stdPageContent");
+    if (stdPageContent) {
+      stdPageContent.style.paddingBottom = "5px";
+      const lastChild: HTMLElement | null = document.querySelector(
+          "#stdPageContent:last-child"
+      );
+      if (lastChild) lastChild.style.marginBottom = "0";
+    }
+
+    dom.forEach((el) => {
+      if (el.lastElementChild) el.removeChild(el.lastElementChild);
+    });
+
     return {
-      width: document.scrollingElement!.scrollWidth,
-      height: document.scrollingElement!.scrollHeight,
+      width:
+        document.scrollingElement?.scrollWidth ||
+        document.documentElement.scrollWidth ||
+        document.documentElement.offsetWidth,
+      height:
+        document.scrollingElement?.scrollHeight ||
+        document.documentElement.scrollHeight ||
+        document.documentElement.offsetHeight,
     };
   });
 
   console.log(scrollDimension);
 
-  await page.setViewport({
-    width: scrollDimension.width,
-    height: scrollDimension.height,
-  });
+  // await page.setViewport({
+  //   width: scrollDimension.width,
+  //   height: scrollDimension.height,
+  // });
+
   const pdf = await page.pdf({
     printBackground: true,
     width: scrollDimension.width,
-    height: scrollDimension.height,
+    height: scrollDimension.height + 1,
   });
 
   await browser.close();
@@ -221,14 +238,13 @@ app.post("/create-pdfs", async (req, res) => {
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      defaultViewport: {
-        width: 500,
-        height: 800,
-        isMobile: true,
-      },
     });
 
     const page = await browser.newPage();
+
+    const phone = puppeteer.devices["iPhone X"];
+
+    await page.emulate(phone);
 
     await page.goto(ticketekUrl, {
       waitUntil: "networkidle0",
@@ -237,17 +253,8 @@ app.post("/create-pdfs", async (req, res) => {
     const canEvaluate = await page.evaluate(() => {
       const barcode = document.querySelector("#barcode");
       const dom = document.querySelectorAll(".textColumn");
-      const body = document.querySelector("body");
-      if (body) body.style.fontFamily = "sans-serif";
-      const stdPageContent: HTMLElement | null =
-        document.querySelector("#stdPageContent");
-      if (stdPageContent) stdPageContent.style.paddingBottom = "0";
 
       if (!barcode || !dom) return false;
-
-      dom.forEach((el) => {
-        if (el.lastElementChild) el.removeChild(el.lastElementChild);
-      });
 
       return null;
     });
@@ -259,23 +266,49 @@ app.post("/create-pdfs", async (req, res) => {
     }
 
     const scrollDimension = await page.evaluate(() => {
+      const dom = document.querySelectorAll(".textColumn");
+      const body = document.querySelector("body");
+      if (body) {
+        body.style.fontFamily = "sans-serif";
+        body.style.height = "100vh";
+      }
+      const stdPageContent: HTMLElement | null =
+        document.querySelector("#stdPageContent");
+      if (stdPageContent) {
+        stdPageContent.style.paddingBottom = "5px";
+        const lastChild: HTMLElement | null = document.querySelector(
+            "#stdPageContent:last-child"
+        );
+        if (lastChild) lastChild.style.marginBottom = "0";
+      }
+
+      dom.forEach((el) => {
+        if (el.lastElementChild) el.removeChild(el.lastElementChild);
+      });
+
       return {
-        width: document.scrollingElement!.scrollWidth,
-        height: document.scrollingElement!.scrollHeight,
+        width:
+          document.scrollingElement?.scrollWidth ||
+          document.documentElement.scrollWidth ||
+          document.documentElement.offsetWidth,
+        height:
+          document.scrollingElement?.scrollHeight ||
+          document.documentElement.scrollHeight ||
+          document.documentElement.offsetHeight,
       };
     });
 
     console.log(scrollDimension);
 
-    await page.setViewport({
-      width: scrollDimension.width,
-      height: scrollDimension.height,
-    });
+    // await page.setViewport({
+    //   width: scrollDimension.width,
+    //   height: scrollDimension.height,
+    // });
 
     const pdf = await page.pdf({
       printBackground: true,
       width: scrollDimension.width,
-      height: scrollDimension.height,
+      height: scrollDimension.height + 1,
     });
 
     await browser.close();
