@@ -78,7 +78,7 @@ app.post("/create-pdf", async (req, res) => {
     const stdPageContent: HTMLElement | null =
       document.querySelector("#stdPageContent");
     if (stdPageContent) {
-      stdPageContent.style.paddingBottom = "5px";
+      stdPageContent.style.paddingBottom = "0";
       const lastChild: HTMLElement | null = document.querySelector(
           "#stdPageContent:last-child"
       );
@@ -111,7 +111,7 @@ app.post("/create-pdf", async (req, res) => {
   const pdf = await page.pdf({
     printBackground: true,
     width: scrollDimension.width,
-    height: scrollDimension.height + 1,
+    height: scrollDimension.height + 20,
   });
 
   await browser.close();
@@ -275,7 +275,7 @@ app.post("/create-pdfs", async (req, res) => {
       const stdPageContent: HTMLElement | null =
         document.querySelector("#stdPageContent");
       if (stdPageContent) {
-        stdPageContent.style.paddingBottom = "5px";
+        stdPageContent.style.paddingBottom = "0";
         const lastChild: HTMLElement | null = document.querySelector(
             "#stdPageContent:last-child"
         );
@@ -308,7 +308,7 @@ app.post("/create-pdfs", async (req, res) => {
     const pdf = await page.pdf({
       printBackground: true,
       width: scrollDimension.width,
-      height: scrollDimension.height + 1,
+      height: scrollDimension.height + 20,
     });
 
     await browser.close();
