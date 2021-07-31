@@ -81,7 +81,7 @@ app.post("/create-pdf", async (req, res) => {
       stdPageContent.style.paddingBottom = "0";
       const lastChild: HTMLElement | null = document.querySelector(
           "#stdPageContent:last-child"
-      );
+      )!.lastElementChild as HTMLElement;
       if (lastChild) lastChild.style.marginBottom = "0";
     }
 
@@ -278,7 +278,7 @@ app.post("/create-pdfs", async (req, res) => {
         stdPageContent.style.paddingBottom = "0";
         const lastChild: HTMLElement | null = document.querySelector(
             "#stdPageContent:last-child"
-        );
+        )!.lastElementChild as HTMLElement;
         if (lastChild) lastChild.style.marginBottom = "0";
       }
 
