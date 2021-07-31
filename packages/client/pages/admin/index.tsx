@@ -9,8 +9,8 @@ import Loader from 'components/Loader'
 import { auth } from 'lib/firebase'
 import { UserContext, UserRoles } from 'lib/context'
 
-const Admin: React.FC<AppProps> = () => {
-  const { user, roles } = useContext(UserContext)
+const Admin: React.FC<AppProps> = (props) => {
+  const { user, roles, isAuthLoading } = useContext(UserContext)
   const router = useRouter()
 
   const [email, setEmail] = useState('')
@@ -34,7 +34,7 @@ const Admin: React.FC<AppProps> = () => {
     setIsSubmitting(false)
   }
 
-  if (user && roles.includes(UserRoles.Admin)) return <Loader show type="circle" center />
+  if (isAuthLoading) return <Loader show type="circle" center />
 
   return (
     <>

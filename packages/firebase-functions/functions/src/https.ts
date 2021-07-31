@@ -16,14 +16,11 @@ app.use(cors({origin: true}));
 
 app.use(express.json());
 
-
 app.post("/create-pdf", async (req, res) => {
   const {ticketekUrl}: { ticketekUrl: string } = req.body;
 
   if (!ticketekUrl.length) {
-    res
-        .status(400)
-        .send({errors: [{message: "no url entered"}]});
+    res.status(400).send({errors: [{message: "no url entered"}]});
   }
 
   if (!isValidTicketekUrl(ticketekUrl)) {
@@ -32,7 +29,9 @@ app.post("/create-pdf", async (req, res) => {
 
   const ticketsRef = admin.firestore().collection("tickets");
   const snapshot = await ticketsRef
-      .where("ticketekUrl", "==", ticketekUrl).limit(1).get();
+      .where("ticketekUrl", "==", ticketekUrl)
+      .limit(1)
+      .get();
 
   if (!snapshot.empty) {
     const {mobileTicketsUrl} = snapshot.docs[0].data();
@@ -41,7 +40,12 @@ app.post("/create-pdf", async (req, res) => {
 
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "disable-setuid-sandbox"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    defaultViewport: {
+      width: 500,
+      height: 800,
+      isMobile: true,
+    },
   });
 
   const page = await browser.newPage();
@@ -54,7 +58,7 @@ app.post("/create-pdf", async (req, res) => {
     const barcode = document.querySelector("#barcode");
     const dom = document.querySelectorAll(".textColumn");
     const body = document.querySelector("body");
-    if (body) body.style.height = "100vh";
+    if (body) body.style.fontFamily = "sans-serif";
     const stdPageContent: HTMLElement | null =
       document.querySelector("#stdPageContent");
     if (stdPageContent) stdPageContent.style.paddingBottom = "0";
@@ -69,17 +73,33 @@ app.post("/create-pdf", async (req, res) => {
   });
 
   if (canEvaluate === false) {
-    return res.status(400).send({errors: [{message: "ticket does not exist"}]});
+    return res
+        .status(400)
+        .send({errors: [{message: "ticket does not exist"}]});
   }
 
+  const scrollDimension = await page.evaluate(() => {
+    return {
+      width: document.scrollingElement!.scrollWidth,
+      height: document.scrollingElement!.scrollHeight,
+    };
+  });
+
+  console.log(scrollDimension);
+
+  await page.setViewport({
+    width: scrollDimension.width,
+    height: scrollDimension.height,
+  });
   const pdf = await page.pdf({
-    format: "a6",
     printBackground: true,
+    width: scrollDimension.width,
+    height: scrollDimension.height,
   });
 
   await browser.close();
 
-  const ticketId = db.collection("tickets").doc().id;
+  const ticketId = ticketekUrl.split("?id=")[1];
 
   const file = admin
       .storage()
@@ -90,12 +110,15 @@ app.post("/create-pdf", async (req, res) => {
 
   const url = `https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D${ticketId}.pdf`;
 
-  await db.collection("tickets").doc(ticketId).set({
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    pdfUrl: url,
-    ticketekUrl,
-    mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
-  });
+  await db
+      .collection("tickets")
+      .doc(ticketId)
+      .set({
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        pdfUrl: url,
+        ticketekUrl,
+        mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
+      });
 
   return res.send({id: ticketId, ticketekUrl});
 });
@@ -104,9 +127,9 @@ app.get("/create-csv", async (_req, res) => {
   const ticketsRef = admin.firestore().collection("tickets");
   const snapshot = await ticketsRef.get();
   interface Ticket {
-    ticketekUrl: string,
-    mobileTicketsUrl: string,
-    createdAt: string,
+    ticketekUrl: string;
+    mobileTicketsUrl: string;
+    createdAt: string;
   }
 
   if (snapshot.empty) {
@@ -134,12 +157,10 @@ app.get("/create-csv", async (_req, res) => {
 
 app.post("/create-pdfs", async (req, res) => {
   const {ticketekUrls}: { ticketekUrls: string[] } = req.body;
-  const finalUrlIds: { id: string, ticketekUrl: string }[] = [];
+  const finalUrlIds: { id: string; ticketekUrl: string }[] = [];
 
   if (!ticketekUrls.length) {
-    res
-        .status(400)
-        .send({errors: [{message: "no urls entered"}]});
+    res.status(400).send({errors: [{message: "no urls entered"}]});
   }
 
   let allUrlsAreValid = true;
@@ -160,13 +181,16 @@ app.post("/create-pdfs", async (req, res) => {
   }
 
   /**
- * Checks if ticket url is valid.
- * @param {string} ticketekUrl The url.
- * @return {Promise<FirebaseFirestore.DocumentData>}
- */ async function findExistingUrl(ticketekUrl: string)
-    : Promise<FirebaseFirestore.DocumentData> {
+   * Checks if ticket url is valid.
+   * @param {string} ticketekUrl The url.
+   * @return {Promise<FirebaseFirestore.DocumentData>}
+   */ async function findExistingUrl(
+      ticketekUrl: string
+  ): Promise<FirebaseFirestore.DocumentData> {
     return await ticketsRef
-        .where("ticketekUrl", "==", ticketekUrl).limit(1).get();
+        .where("ticketekUrl", "==", ticketekUrl)
+        .limit(1)
+        .get();
   }
 
   const ticketsRef = admin.firestore().collection("tickets");
@@ -179,8 +203,7 @@ app.post("/create-pdfs", async (req, res) => {
   snapshots.forEach((snapshot) => {
     if (!snapshot.empty) {
       const {mobileTicketsUrl, ticketekUrl} = snapshot.docs[0].data();
-      finalUrlIds
-          .push({id: mobileTicketsUrl.split("?id=")[1], ticketekUrl});
+      finalUrlIds.push({id: mobileTicketsUrl.split("?id=")[1], ticketekUrl});
       const index = ticketekUrls.indexOf(ticketekUrl);
       if (index > -1) {
         ticketekUrls.splice(index, 1);
@@ -191,13 +214,18 @@ app.post("/create-pdfs", async (req, res) => {
   if (!ticketekUrls.length) res.send(finalUrlIds);
 
   /**
- * Checks if ticket url is valid.
- * @param {string} ticketekUrl The url.
- */
+   * Checks if ticket url is valid.
+   * @param {string} ticketekUrl The url.
+   */
   async function generatePdfs(ticketekUrl: string) {
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "disable-setuid-sandbox"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: {
+        width: 500,
+        height: 800,
+        isMobile: true,
+      },
     });
 
     const page = await browser.newPage();
@@ -210,7 +238,7 @@ app.post("/create-pdfs", async (req, res) => {
       const barcode = document.querySelector("#barcode");
       const dom = document.querySelectorAll(".textColumn");
       const body = document.querySelector("body");
-      if (body) body.style.height = "100vh";
+      if (body) body.style.fontFamily = "sans-serif";
       const stdPageContent: HTMLElement | null =
         document.querySelector("#stdPageContent");
       if (stdPageContent) stdPageContent.style.paddingBottom = "0";
@@ -225,18 +253,34 @@ app.post("/create-pdfs", async (req, res) => {
     });
 
     if (canEvaluate === false) {
-      return res.status(400)
+      return res
+          .status(400)
           .send({errors: [{message: "ticket does not exist"}]});
     }
 
+    const scrollDimension = await page.evaluate(() => {
+      return {
+        width: document.scrollingElement!.scrollWidth,
+        height: document.scrollingElement!.scrollHeight,
+      };
+    });
+
+    console.log(scrollDimension);
+
+    await page.setViewport({
+      width: scrollDimension.width,
+      height: scrollDimension.height,
+    });
+
     const pdf = await page.pdf({
-      format: "a6",
       printBackground: true,
+      width: scrollDimension.width,
+      height: scrollDimension.height,
     });
 
     await browser.close();
 
-    const ticketId = db.collection("tickets").doc().id;
+    const ticketId = ticketekUrl.split("?id=")[1];
 
     const file = admin
         .storage()
@@ -247,14 +291,16 @@ app.post("/create-pdfs", async (req, res) => {
 
     const url = `https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D${ticketId}.pdf`;
 
-    await db.collection("tickets").doc(ticketId).set({
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      pdfUrl: url,
-      ticketekUrl,
-      mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
-    });
-    finalUrlIds
-        .push({id: ticketId, ticketekUrl});
+    await db
+        .collection("tickets")
+        .doc(ticketId)
+        .set({
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          pdfUrl: url,
+          ticketekUrl,
+          mobileTicketsUrl: `https://www.mobiletickets.online?id=${ticketId}`,
+        });
+    finalUrlIds.push({id: ticketId, ticketekUrl});
 
     return null;
   }
@@ -271,6 +317,5 @@ app.post("/create-pdfs", async (req, res) => {
 
   return res.send(finalUrlIds);
 });
-
 
 export const api = functions.runWith({memory: "1GB"}).https.onRequest(app);

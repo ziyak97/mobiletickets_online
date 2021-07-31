@@ -9,6 +9,7 @@ import CopyText from 'components/CopyText'
 import CsvModal from 'components/CsvModal'
 import TagInput from 'components/TagInput'
 import Toggle from 'components/Toggle'
+import Loader from 'components/Loader'
 import { UserContext, UserRoles } from 'lib/context'
 import { isValidTicketekUrl, fetchFromAPI } from 'lib/helpers'
 
@@ -25,7 +26,7 @@ interface TicketsCreated {
 }
 
 const Dashboard: React.FC<AppProps> = () => {
-  const { user, roles } = useContext(UserContext)
+  const { user, roles, isAuthLoading } = useContext(UserContext)
   const router = useRouter()
 
   const [ticketUrl, setTicketUrl] = useState('')
@@ -85,6 +86,8 @@ const Dashboard: React.FC<AppProps> = () => {
     setOpenModal(false)
   }
 
+  if (isAuthLoading) return <Loader show type="circle" center />
+
   return (
     <>
       <Head>
@@ -114,7 +117,7 @@ const Dashboard: React.FC<AppProps> = () => {
         )}
         <Toggle
           toggled={manyUrls}
-          onClick={() => setManyUrls((prev) => !prev)}
+          onChange={() => setManyUrls((prev) => !prev)}
           helperUnchecked="One Url"
           helperChecked="Many Urls"
         />
