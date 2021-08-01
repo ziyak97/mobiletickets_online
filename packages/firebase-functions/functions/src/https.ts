@@ -80,7 +80,7 @@ app.post("/create-pdf", async (req, res) => {
         document.documentElement.offsetHeight
       ),
     };
-  })
+  });
 
   await page.evaluate(() => {
     const dom = document.querySelectorAll(".textColumn");
