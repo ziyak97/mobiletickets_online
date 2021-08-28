@@ -54,10 +54,9 @@ const Home: React.FC<AppProps> = () => {
   return (
     <div className={styles.container}>
       {/* <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} /> */}
-      <iframe src='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' width="100%"></iframe>
-      {/* <object data='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' type="application/pdf" width="100%" >
-        <embed src='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' type="application/pdf" width="100%" />
-      </object> */}
+      <object data={pdfUrl} type="application/pdf" width="100%" >
+        <embed src={pdfUrl} type="application/pdf" width="100%" />
+      </object>
     </div>
   )
 }
