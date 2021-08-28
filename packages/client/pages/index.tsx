@@ -53,7 +53,7 @@ const Home: React.FC<AppProps> = () => {
 
   return (
     <div className={styles.container}>
-      <iframe src={pdfUrl} style={{minHeight: '100%'}} width="100%" ></iframe>
+      <iframe src="http://docs.google.com/gview? url=https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf&embedded=true" style={{minHeight: '100%'}} width="100%" ></iframe>
       {/* <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} /> */}
       {/* <object data={pdfUrl} type="application/pdf" width="100%" >
         <embed src={pdfUrl} type="application/pdf" width="100%" />
