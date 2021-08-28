@@ -3,11 +3,11 @@
 }
 
 .container object {
-  height: 100vh;
+  height: 100%;
 }
 
 .container embed {
-  height: 100vh;
+  height: 100%;
 }
 
 .container_no_ticket {
