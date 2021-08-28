@@ -25,10 +25,16 @@ const Home: React.FC<AppProps> = () => {
             return
           }
           const data = doc.data()
-          if (data.pdfUrl) {
-            const pdf = encodeURIComponent(data.pdfUrl)
-            setPdfUrl(pdf)
-          }
+          if (data.pdfUrl){
+             setPdfUrl(data.pdfUrl)
+             const a = document.createElement('a')
+             a.href = data.pdfUrl
+             a.download = data.pdfUrl.split('/').pop()
+             document.body.appendChild(a)
+             a.click()
+             document.body.removeChild(a)
+           
+            }
           setIsLoading(false)
         } catch (error) {
           console.error(error)
@@ -56,11 +62,10 @@ const Home: React.FC<AppProps> = () => {
 
   return (
     <div className={styles.container}>
-      <iframe src={'https://docs.google.com/viewer?url='+pdfUrl+'&embedded=true'} style={{minHeight: '100%'}} width="100%" ></iframe>
       {/* <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} /> */}
-      {/* <object data={pdfUrl} type="application/pdf" width="100%" >
+      <object data={pdfUrl} type="application/pdf" width="100%" >
         <embed src={pdfUrl} type="application/pdf" width="100%" />
-      </object> */}
+      </object>
     </div>
   )
 }
