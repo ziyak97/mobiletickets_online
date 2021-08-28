@@ -36,29 +36,27 @@ const Home: React.FC<AppProps> = () => {
     })()
   }, [])
 
-  // if (error) return <div>Error...</div>
+  if (error) return <div>Error...</div>
 
-  // // if (isLoading) return <Loader show type="circle" center />
-  // if (isLoading) return null
+  // if (isLoading) return <Loader show type="circle" center />
+  if (isLoading) return null
 
 
-  // if (!pdfUrl && !isLoading)
-  //   return (
-  //     <div className={styles.container_no_ticket}>
-  //       <h1>No ticket!</h1>
-  //       <TicketImage style={{ width: '100%', maxWidth: '600px' }} />
-  //       <p>The ticket you are looking for does not exists or has been removed.</p>
-  //     </div>
-  //   )
+  if (!pdfUrl && !isLoading)
+    return (
+      <div className={styles.container_no_ticket}>
+        <h1>No ticket!</h1>
+        <TicketImage style={{ width: '100%', maxWidth: '600px' }} />
+        <p>The ticket you are looking for does not exists or has been removed.</p>
+      </div>
+    )
 
   return (
     <div className={styles.container}>
       {/* <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} /> */}
-      <iframe src="https://docs.google.com/gview?url=https://path.com/to/your/https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf&embedded=true" style="width:100%; height:100%;" frameborder="0"></iframe>
-
-      {/* <object data='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' type="application/pdf" width="100%" height="100%">
-        <embed src='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' type="application/pdf" width="100%" height="100%"/>
-      </object> */}
+      <object data='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' type="application/pdf" width="100%" >
+        <embed src='https://storage.googleapis.com/mobiletickets-online.appspot.com/mobiletickets_online%3Fid%3D25208BF2B170140C8F01&s=6069.pdf' type="application/pdf" width="100%" />
+      </object>
     </div>
   )
 }
