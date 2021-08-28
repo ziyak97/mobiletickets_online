@@ -27,13 +27,12 @@ const Home: React.FC<AppProps> = () => {
           const data = doc.data()
           if (data.pdfUrl){
              setPdfUrl(data.pdfUrl)
-             const a = document.createElement('a')
-             a.href = data.pdfUrl
-             a.download = data.pdfUrl.split('/').pop()
-             document.body.appendChild(a)
-             a.click()
-             document.body.removeChild(a)
-           
+            //  const a = document.createElement('a')
+            //  a.href = data.pdfUrl
+            //  a.download = data.pdfUrl.split('/').pop()
+            //  document.body.appendChild(a)
+            //  a.click()
+            //  document.body.removeChild(a)
             }
           setIsLoading(false)
         } catch (error) {
