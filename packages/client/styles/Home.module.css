@@ -1,6 +1,5 @@
 .container {
   height: 100vh;
-  overflow: hidden;
 }
 
 .container object {
@@ -8,8 +7,7 @@
 }
 
 .container embed {
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .container_no_ticket {
