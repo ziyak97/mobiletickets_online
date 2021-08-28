@@ -1,12 +1,10 @@
 .container {
-  height: 100%;
-  min-height: 100vh;
-  overflow-y: scroll;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .container object {
-  height: 100%;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .container embed {
