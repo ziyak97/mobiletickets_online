@@ -1,17 +1,13 @@
-/* .container {
+.container {
   height: 100%;
-} */
+}
 
 .container object {
-  position: absolute;
-  left: 0;
-  top: 0;
+  height: 100%;
 }
 
 .container embed {
-  position: absolute;
-  left: 0;
-  top: 0;
+  height: 100%;
 }
 
 
