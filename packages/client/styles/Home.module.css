@@ -2,14 +2,6 @@
   height: 100vh;
 }
 
-.container object {
-  height: 100%;
-}
-
-.container embed {
-  height: 100%;
-}
-
 .container_no_ticket {
   text-align: center;
   padding: 2%;
