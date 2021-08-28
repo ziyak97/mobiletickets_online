@@ -27,7 +27,7 @@ const Home: React.FC<AppProps> = () => {
           const data = doc.data()
           if (data.pdfUrl) {
             const pdf = encodeURIComponent(data.pdfUrl)
-            setPdfUrl(data.pdfUrl)
+            setPdfUrl(pdf)
           }
           setIsLoading(false)
         } catch (error) {
