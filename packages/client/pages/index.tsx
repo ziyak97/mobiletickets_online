@@ -25,7 +25,10 @@ const Home: React.FC<AppProps> = () => {
             return
           }
           const data = doc.data()
-          if (data.pdfUrl) setPdfUrl(data.pdfUrl)
+          if (data.pdfUrl) {
+            const pdf = data.pdfUrl.replace('&', '%26')
+            setPdfUrl(data.pdfUrl)
+          }
           setIsLoading(false)
         } catch (error) {
           console.error(error)
