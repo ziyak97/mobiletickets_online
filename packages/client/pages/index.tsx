@@ -39,6 +39,8 @@ const Home: React.FC<AppProps> = () => {
   if (error) return <div>Error...</div>
 
   // if (isLoading) return <Loader show type="circle" center />
+  if (isLoading) return null
+
 
   if (!pdfUrl && !isLoading)
     return (
