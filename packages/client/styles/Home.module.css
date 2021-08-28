@@ -10,6 +10,9 @@
   min-height: 100%;
 }
 
+.container iframe {
+  min-height: 100%;
+}
 
 .container_no_ticket {
   text-align: center;
