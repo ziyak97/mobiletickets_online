@@ -53,6 +53,7 @@ const Home: React.FC<AppProps> = () => {
 
   return (
     <div className={styles.container}>
+      <iframe src={pdfUrl} style={{minHeight: '100%'}} width="100%" ></iframe>
       {/* <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} /> */}
       {/* <object data={pdfUrl} type="application/pdf" width="100%" >
         <embed src={pdfUrl} type="application/pdf" width="100%" />
