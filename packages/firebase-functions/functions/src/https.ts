@@ -184,6 +184,11 @@ app.post("/create-pdfs", async (req, res) => {
         .send({errors: [{message: `${invlidUrl} is an invlid url`}]});
   }
 
+  const ticketsRef = admin.firestore().collection("tickets");
+  const promises = ticketekUrls.map((ticketekUrl) => {
+    return findExistingUrl(ticketekUrl);
+  });
+
   /**
    * Checks if ticket url is valid.
    * @param {string} ticketekUrl The url.
@@ -196,11 +201,6 @@ app.post("/create-pdfs", async (req, res) => {
         .limit(1)
         .get();
   }
-
-  const ticketsRef = admin.firestore().collection("tickets");
-  const promises = ticketekUrls.map((ticketekUrl) => {
-    return findExistingUrl(ticketekUrl);
-  });
 
   const snapshots = await Promise.all(promises);
 

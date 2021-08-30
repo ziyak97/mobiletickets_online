@@ -34,6 +34,15 @@ const TagInput: React.FC<TagInputProps> = ({ label, name, setOutput }) => {
   const [tags, setTags] = useState([])
   const [inputValue, setInputValue] = useState('')
 
+  const arrayIfSpaces = inputValue.split(/[ ]+/)
+  if (arrayIfSpaces.length > 1) {
+    const allTags: string[] = [...tags, ...arrayIfSpaces]
+    setTags(allTags)
+    setOutput && setOutput(allTags)
+    setInputValue('')
+    return
+  }
+
   function inputValueChangeHandler(inputChange: string, type: string, keyCode: string): void {
     setInputValue(inputChange)
     if (inputChange[inputChange.length - 1] === ',' && type === 'comma') {
