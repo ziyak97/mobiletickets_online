@@ -67,12 +67,14 @@ const Home: React.FC<AppProps> = () => {
   return (
     <div className={styles.container}>
       {/* <Loader show type="circle" center style={{ position: 'absolute', zIndex: -1 }} /> */}
-      {/* <object data={pdfUrl} type="application/pdf" width="100%" >
-        <embed src={pdfUrl} type="application/pdf" width="100%" />
-      </object> */}
-      <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-        <Viewer renderLoader={() => null} fileUrl={pdfUrl} />;
-      </Worker>
+      <object className={styles.desktop} data={pdfUrl} type="application/pdf" width="100%">
+        <embed className={styles.desktop} src={pdfUrl} type="application/pdf" width="100%" />
+      </object>
+      <div className={styles.mobile}>
+        <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+          <Viewer renderLoader={() => null} fileUrl={pdfUrl} />;
+        </Worker>
+      </div>
     </div>
   )
 }
